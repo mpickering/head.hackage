@@ -1,0 +1,14 @@
+diff --git a/Test/Tasty/Runners/AntXML.hs b/Test/Tasty/Runners/AntXML.hs
+index aa4dc63..f39020d 100644
+--- a/Test/Tasty/Runners/AntXML.hs
++++ b/Test/Tasty/Runners/AntXML.hs
+@@ -53,6 +53,9 @@ data Summary = Summary { summaryFailures :: Sum Int
+                        , xmlRenderer :: Endo XML.Element
+                        } deriving (Generic)
+ 
++instance Semigroup Summary where
++  (<>) = mappend
++
+ instance Monoid Summary where
+   mempty = memptydefault
+   mappend = mappenddefault

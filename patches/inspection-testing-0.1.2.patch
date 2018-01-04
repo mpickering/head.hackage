@@ -1,0 +1,41 @@
+diff --git a/Test/Inspection/Core.hs b/Test/Inspection/Core.hs
+index 5a76577..7cafb4c 100644
+--- a/Test/Inspection/Core.hs
++++ b/Test/Inspection/Core.hs
+@@ -1,6 +1,6 @@
+ -- | This module implements some of analyses of Core expressions necessary for
+--- "Test.Inspection". Normally, users of this pacakge can ignore this module. 
+-{-# LANGUAGE CPP, FlexibleContexts #-}
++-- "Test.Inspection". Normally, users of this pacakge can ignore this module.
++{-# LANGUAGE CPP, FlexibleContexts, NoImplicitPrelude #-}
+ module Test.Inspection.Core
+   ( slice
+   , pprSlice
+@@ -27,6 +27,7 @@ import qualified Data.Set as S
+ import Control.Monad.State.Strict
+ import Control.Monad.Trans.Maybe
+ import Data.Maybe
++import Prelude hiding ((<>))
+ 
+ type Slice = [(Var, CoreExpr)]
+ 
+diff --git a/Test/Inspection/Plugin.hs b/Test/Inspection/Plugin.hs
+index b51efef..e6a626e 100644
+--- a/Test/Inspection/Plugin.hs
++++ b/Test/Inspection/Plugin.hs
+@@ -3,6 +3,7 @@
+ {-# LANGUAGE CPP #-}
+ {-# LANGUAGE RecordWildCards #-}
+ {-# LANGUAGE MultiWayIf #-}
++{-# LANGUAGE NoImplicitPrelude #-}
+ module Test.Inspection.Plugin (plugin) where
+ 
+ import Control.Monad
+@@ -17,6 +18,7 @@ import GhcPlugins hiding (SrcLoc)
+ import Test.Inspection.Internal (KeepAlive(..))
+ import Test.Inspection (Obligation(..), Property(..))
+ import Test.Inspection.Core
++import Prelude hiding ((<>))
+ 
+ -- | The plugin. It supports the option @-fplugin-opt=Test.Inspection.Plugin=keep-going@ to
+ -- ignore a failing build.
