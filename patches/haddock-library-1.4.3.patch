@@ -1,0 +1,55 @@
+diff -ru haddock-library-1.4.3/vendor/attoparsec-0.12.1.1/Data/Attoparsec/ByteString/Buffer.hs haddock-library-1.4.3-patched/vendor/attoparsec-0.12.1.1/Data/Attoparsec/ByteString/Buffer.hs
+--- haddock-library-1.4.3/vendor/attoparsec-0.12.1.1/Data/Attoparsec/ByteString/Buffer.hs	2017-04-12 14:34:48.000000000 +0000
++++ haddock-library-1.4.3-patched/vendor/attoparsec-0.12.1.1/Data/Attoparsec/ByteString/Buffer.hs	2018-02-09 11:51:16.434462489 +0000
+@@ -85,6 +85,9 @@
+ unbuffer :: Buffer -> ByteString
+ unbuffer (Buf fp off len _ _) = PS fp off len
+ 
++instance Semigroup Buffer where
++    (<>) = mappend
++
+ instance Monoid Buffer where
+     mempty = Buf nullForeignPtr 0 0 0 0
+ 
+diff -ru haddock-library-1.4.3/vendor/attoparsec-0.12.1.1/Data/Attoparsec/Internal/Types.hs haddock-library-1.4.3-patched/vendor/attoparsec-0.12.1.1/Data/Attoparsec/Internal/Types.hs
+--- haddock-library-1.4.3/vendor/attoparsec-0.12.1.1/Data/Attoparsec/Internal/Types.hs	2017-04-12 14:34:48.000000000 +0000
++++ haddock-library-1.4.3-patched/vendor/attoparsec-0.12.1.1/Data/Attoparsec/Internal/Types.hs	2018-02-09 11:53:59.096380656 +0000
+@@ -21,7 +21,6 @@
+     , Pos(..)
+     , IResult(..)
+     , More(..)
+-    , (<>)
+     , Chunk(..)
+     ) where
+ 
+@@ -116,6 +115,9 @@
+ data More = Complete | Incomplete
+             deriving (Eq, Show)
+ 
++instance Semigroup More where
++    (<>) = mappend
++
+ instance Monoid More where
+     mappend c@Complete _ = c
+     mappend _ m          = m
+@@ -171,6 +173,9 @@
+     x <* y = x >>= \a -> y >> return a
+     {-# INLINE (<*) #-}
+ 
++instance Semigroup (Parser i a) where
++    (<>) = mappend
++
+ instance Monoid (Parser i a) where
+     mempty  = fail "mempty"
+     {-# INLINE mempty #-}
+@@ -195,10 +200,6 @@
+         some_v = (:) <$> v <*> many_v
+     {-# INLINE some #-}
+ 
+-(<>) :: (Monoid m) => m -> m -> m
+-(<>) = mappend
+-{-# INLINE (<>) #-}
+-
+ -- | A common interface for input chunks.
+ class Monoid c => Chunk c where
+   type ChunkElem c
