@@ -1,6 +1,8 @@
-#!/bin/bash -e
+#!/usr/bin/env bash
 
-patches_dir=$(realpath head.hackage/patches)
+set -e
+
+patches_dir=$(realpath $(dirname $0)/../patches)
 
 add_pkg_dirs() {
     local dirs=$@
