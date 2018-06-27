@@ -1,0 +1,28 @@
+diff --git a/Basement/Nat.hs b/Basement/Nat.hs
+index 86dfe63..1f41d26 100644
+--- a/Basement/Nat.hs
++++ b/Basement/Nat.hs
+@@ -12,7 +12,7 @@ module Basement.Nat
+     ( Nat
+     , KnownNat
+     , natVal
+-    , type (<=), type (<=?), type (+), type (*), type (^), type (-)
++    , type (<=), type (<=?), type (+), type (GHC.TypeLits.*), type (^), type (-)
+     , CmpNat
+     -- * Nat convertion
+     , natValNatural
+diff --git a/Basement/Sized/Block.hs b/Basement/Sized/Block.hs
+index 3ca58a2..96b37a1 100644
+--- a/Basement/Sized/Block.hs
++++ b/Basement/Sized/Block.hs
+@@ -11,6 +11,10 @@
+ {-# LANGUAGE ScopedTypeVariables        #-}
+ {-# LANGUAGE GeneralizedNewtypeDeriving #-}
+ {-# LANGUAGE ConstraintKinds            #-}
++{-# LANGUAGE CPP                        #-}
++#if MIN_VERSION_base(4,12,0)
++{-# LANGUAGE NoStarIsType               #-}
++#endif
+ 
+ module Basement.Sized.Block
+     ( BlockN
