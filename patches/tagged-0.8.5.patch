@@ -6,7 +6,7 @@ index 1d211a3..075889c 100644
  
    if impl(ghc>=7.6)
      exposed-modules: Data.Proxy.TH
--    build-depends: template-haskell >= 2.8 && < 2.14
+-    build-depends: template-haskell >= 2.8 && < 2.13
 +    build-depends: template-haskell >= 2.8 && < 2.15
  
    if flag(deepseq)
