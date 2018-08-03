@@ -60,7 +60,7 @@ unpack_patch_all() {
 unpack_pkg() {
     local pkg=$1
     pushd packages
-    cabal unpack $pkg
+    cabal unpack --pristine $pkg
     local pkg_dir="$(ls -d $pkg* | head)"
     if [ -z "$pkg_dir" ]; then
         echo "failed to unpack $pkg"
