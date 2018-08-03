@@ -77,6 +77,10 @@ let
               doctest = haskellPackages.callPackage ./doctest.nix {};
               http-api-data = haskellPackages.callPackage ./http-api-data.nix {};
               tagged = self1.callHackage "tagged" "0.8.6" {};
+              semigroupoids = self1.callHackage "semigroupoids" "5.3.1" {};
+              profunctors = self1.callHackage "profunctors" "5.3" {};
+              contravariant = self1.callHackage "contravariant" "1.5" {};
+              ghc-exactprint = self1.callHackage "ghc-exactprint" "0.5.7.0" {};
 
               jailbreak-cabal = self.haskell.packages.ghc802.jailbreak-cabal;
               cabal2nix = self.haskell.packages.ghc843.cabal2nix;

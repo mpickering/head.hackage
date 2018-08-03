@@ -2,12 +2,12 @@
 nixpkgs:
 let spec =
   {
-    version = "8.6.1.20180716";
+    version = "8.6.1.20180803";
     src =
       nixpkgs.fetchgit {
         url = "git://git.haskell.org/ghc.git";
-        rev = "ghc-8.6.1-alpha2";
-        sha256 = "03y824yfy1xh2cznq5q75sql8pb0lxyw9ry82jgms9jampky98x6";
+        rev = "e86db0d59dc2f9d8f4140c6b3052762a1ae82428";
+        sha256 = "0w5sdbgv5mjc96v5s0skscizp1ndvcdvf54r15zfpz7cdfcg31km";
       };
   };
 in
