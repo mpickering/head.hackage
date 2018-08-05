@@ -1,0 +1,56 @@
+commit 109f44563c024b85c0f659e44554139070f7edad
+Author: Matthew Pickering <matthewtpickering@gmail.com>
+Date:   Sun Aug 5 12:23:05 2018 +0000
+
+    Stop plugin panic
+
+diff --git a/compiler/deSugar/DsUsage.hs b/compiler/deSugar/DsUsage.hs
+index 45d4dcfb48..44f5aab3be 100644
+--- a/compiler/deSugar/DsUsage.hs
++++ b/compiler/deSugar/DsUsage.hs
+@@ -24,6 +24,7 @@ import Fingerprint
+ import Maybes
+ import Packages
+ import Finder
++import MonadUtils (mapMaybeM)
+ 
+ import Data.List
+ import Data.IORef
+@@ -173,7 +174,7 @@ mkPluginUsage hsc_env pluginModule
+                         | searchPath <- searchPaths
+                         , lib <- libs
+                         ]
+-      in  mapM hashFile (nub dynlibs)
++      in  mapMaybeM hashFile (nub dynlibs)
+     _ -> do
+       foundM <- findPluginModule hsc_env pNm
+       case foundM of
+@@ -181,7 +182,7 @@ mkPluginUsage hsc_env pluginModule
+         -- the `plugin` binder, and all object files belong to modules that are
+         -- transitive dependencies of the plugin that belong to the same package
+         Found ml _ -> do
+-          pluginObject <- hashFile  (ml_obj_file ml)
++          Just pluginObject <- hashFile  (ml_obj_file ml)
+           depObjects   <- catMaybes <$> mapM lookupObjectFile deps
+           return (nub (pluginObject : depObjects))
+         _ -> pprPanic "mkPluginUsage: no object or dylib" (ppr pNm)
+@@ -201,7 +202,7 @@ mkPluginUsage hsc_env pluginModule
+       foundM <- findImportedModule hsc_env nm Nothing
+       case foundM of
+         Found ml m
+-          | moduleUnitId m == pPkg -> Just <$> hashFile (ml_obj_file ml)
++          | moduleUnitId m == pPkg -> hashFile (ml_obj_file ml)
+           | otherwise              -> return Nothing
+         _ -> pprPanic "mkPluginUsage: no object for dependency"
+                       (ppr pNm <+> ppr nm)
+@@ -211,8 +212,8 @@ mkPluginUsage hsc_env pluginModule
+       if fExist
+          then do
+             h <- getFileHash f
+-            return (UsageFile f h)
+-         else pprPanic "mkPluginUsage: file not found" (ppr pNm <+> text f)
++            return (Just (UsageFile f h))
++         else return Nothing
+ 
+ mk_mod_usage_info :: PackageIfaceTable
+               -> HscEnv

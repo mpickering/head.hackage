@@ -15,5 +15,6 @@ in
 (nixpkgs.haskell.compiler.ghcHEAD.override
     { version = spec.version
     ; bootPkgs = nixpkgs.haskell.packages.ghc822; }).overrideAttrs(oldAttrs:
-    { src = spec.src; })
+    { src = spec.src
+    ; patches = [./plugins.patch]; })
 
