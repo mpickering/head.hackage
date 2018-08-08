@@ -1,0 +1,61 @@
+From e65c08dfac5be898ddd27f81131123f116f4c725 Mon Sep 17 00:00:00 2001
+From: Christiaan Baaij <christiaan.baaij@gmail.com>
+Date: Mon, 6 Aug 2018 12:00:23 +0200
+Subject: [PATCH] Filter plugin dylib locations
+
+Previously we just created a cartesian product of the library
+paths of the plugin package and the libraries of the package.
+Of course, some of these combinations result in a filepath of
+a file doesn't exists, leading to #15475.
+
+Instead of making `haskFile` return Nothing in case a file
+doesn't exist (which would hide errors), we look at all the
+possible dylib locations and ensure that at least one of those
+locations is an existing file. If the list turns out to be
+empty however, we panic.
+---
+ compiler/deSugar/DsUsage.hs | 16 +++++++++++++---
+ 1 file changed, 13 insertions(+), 3 deletions(-)
+
+diff --git a/compiler/deSugar/DsUsage.hs b/compiler/deSugar/DsUsage.hs
+index 45d4dcf..0897fc9 100644
+--- a/compiler/deSugar/DsUsage.hs
++++ b/compiler/deSugar/DsUsage.hs
+@@ -166,14 +166,17 @@ mkPluginUsage hsc_env pluginModule
+   = case lookupPluginModuleWithSuggestions dflags pNm Nothing of
+     -- The plug is from an external package, we just look up the dylib that
+     -- contains the plugin
+-    LookupFound _ pkg ->
++    LookupFound _ pkg -> do
+       let searchPaths = collectLibraryPaths dflags [pkg]
+           libs        = packageHsLibs dflags pkg
+-          dynlibs     = [ searchPath </> mkHsSOName platform lib
++          dynlibLocs  = [ searchPath </> mkHsSOName platform lib
+                         | searchPath <- searchPaths
+                         , lib <- libs
+                         ]
+-      in  mapM hashFile (nub dynlibs)
++      dynlibs <- findDynLibs dynlibLocs
++      case dynlibs of
++        [] -> pprPanic "mkPluginUsage: no dylibs" (ppr pNm <+> ppr dynlibLocs)
++        _  -> mapM hashFile (nub dynlibs)
+     _ -> do
+       foundM <- findPluginModule hsc_env pNm
+       case foundM of
+@@ -214,6 +217,13 @@ mkPluginUsage hsc_env pluginModule
+             return (UsageFile f h)
+          else pprPanic "mkPluginUsage: file not found" (ppr pNm <+> text f)
+
++    findDynLibs [] = return []
++    findDynLibs (f:fs) = do
++      fExist <- doesFileExist f
++      if fExist
++         then (:) <$> pure f <*> findDynLibs fs
++         else findDynLibs fs
++
+ mk_mod_usage_info :: PackageIfaceTable
+               -> HscEnv
+               -> Module
+--
+2.7.4
+
