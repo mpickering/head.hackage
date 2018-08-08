@@ -17,7 +17,7 @@ let
 in
 
 # ghc: path to a GHC source tree
-{ ghc ? import ./ghc-prerelease.nix }:
+{ ghc ? import ./ghc-prerelease.nix, overlays ? [] }:
 
 let
   jailbreakOverrides = self: super: {
@@ -103,4 +103,4 @@ let
       '';
     };
   };
-in import baseNixpkgs { overlays = [ overrides ]; }
+in import baseNixpkgs { overlays = [ overrides ] ++ overlays; }
