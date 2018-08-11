@@ -30,6 +30,12 @@ let
     # Should this be self?
     ghcHEAD = ghc super;
 
+
+    ghc843Packages =
+      let
+        hpackExtension = sel: sup: { hpack = sel.callPackage ./nix/hpack.nix {};};
+      in super.haskell.packages.ghc843.extend(hpackExtension);
+
     haskellPackages =
       let patchesOverrides = self.callPackage patches {};
           patches = self.callPackage (import ./scripts/overrides.nix) { patches = ./patches; };
@@ -83,7 +89,7 @@ let
               ghc-exactprint = self1.callHackage "ghc-exactprint" "0.5.7.0" {};
 
               jailbreak-cabal = self.haskell.packages.ghc802.jailbreak-cabal;
-              cabal2nix = self.haskell.packages.ghc843.cabal2nix;
+              cabal2nix = ghc843Packages.cabal2nix;
             };
           };
       in baseHaskellPackages.extend overrides;
